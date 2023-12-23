@@ -1,93 +1,41 @@
 import { test, expect } from '@playwright/test';
+import { LoginPage } from '../tests-examples/Login_Page';
+import { ProfilePage } from '../tests-examples/ProflePage';
+import { License } from '../tests-examples/License';
+import { LogoutPage } from '../tests-examples/LogoutPage';
 
-test('has title', async ({ page }) => {
-  await page.goto('https://playwright.dev/');
-
-  // Expect a title "to contain" a substring.
-  await expect(page).toHaveTitle(/Playwright/);
-});
-
-test('get started link', async ({ page }) => {
-  await page.goto('https://playwright.dev/');
-
-  // Click the get started link.
-  await page.getByRole('link', { name: 'Get started' }).click();
-
-  // Expects page to have a heading with the name of Installation.
-  await expect(
-    page.getByRole('heading', { name: 'Installation' })
-  ).toBeVisible();
-});
-
-test('has title 1', async ({ page }) => {
-  await page.goto('https://pixabay.com/');
-
-  // Expect a title "to contain" a substring.
-  await expect(page).toHaveTitle(/Pixabay/);
-});
-
-// test 1
 test('1', async ({ page }) => {
-  await page.goto('https://pixabay.com/');
-
-  await expect(
-    page.getByRole('heading', { name: 'Stunning royalty-free images' })
-  ).toBeVisible();
-  await expect(
-    page.getByRole('heading', { name: 'Over 4.2 million+ high' })
-  ).toBeVisible();
-  await expect(
-    page.getByRole('button', { name: "Editor's Choice " })
-  ).toBeVisible();
+  const login = new LoginPage(page);
+  const profile = new ProfilePage(page);
+  await login.goto();
+  await login.getLoginBtn.click();
+  await login.getEmailBtn.fill('juliamoiisenko0@gmail.com');
+  await login.getEmailBtn.press('Enter');
+  await login.getPassword.fill('12345qwe');
+  await login.getPassword.press('Enter');
+  await expect(profile.getProfileBtn).toBeVisible();
+  await profile.getProfileBtn.click();
+  await profile.myProfileBtn.click();
+  await expect(page).toHaveURL(/.*users/);
 });
-
-//test 2
 
 test('2', async ({ page }) => {
-  await page.goto('https://pixabay.com/');
-
-  const getStarted = page
-    .getByRole('link', { name: 'nature', exact: true })
-    .first();
-
-  await getStarted.click();
-  await expect(page).toHaveTitle(/Nature/);
-  await expect(page).toHaveURL(/.*nature/);
-  await expect(page).not.toHaveURL('error');
+  const login = new LoginPage(page);
+  const license = new License(page);
+  await login.goto();
+  await license.getLicense.click();
+  await expect(page).toHaveURL(/.*terms/);
+  await expect(license.TermsBtn).toBeEnabled();
 });
 
-// test 3
 test('3', async ({ page }) => {
-  await page.goto('https://pixabay.com/');
-
-  const getStarted = page
-    .getByRole('link', { name: 'nature', exact: true })
-    .first();
-
-  await getStarted.click();
-  await expect(
-    page.getByRole('heading', { name: 'Nature Images & Pictures' })
-  ).toBeVisible();
-
-  await expect(
-    page.getByRole('button', { name: 'Most relevant ' })
-  ).toBeVisible();
-  await expect(page).not.toHaveURL('error');
-});
-//test 4
-test('4', async ({ page }) => {
-  await page.goto('https://pixabay.com/');
-  await page.getByPlaceholder('Search for all images on').click();
-  await page.getByPlaceholder('Search for all images on').fill('Forest');
-  await page.getByPlaceholder('Search for all images on').press('Enter');
-});
-//test 5
-test('5', async ({ page }) => {
-  await page.goto('https://pixabay.com/');
-  await page
-    .getByRole('link', { name: 'Free Bird Tit photo and' })
-    .first()
-    .click();
-  await expect(page).toHaveTitle(/Bird/);
-  await expect(page).toHaveURL(/.*bird/);
+  const login = new LoginPage(page);
+  const logout = new LogoutPage(page);
+  const profile = new ProfilePage(page);
+  await login.goto();
+  await login.loginFunc();
+  await profile.getProfileBtn.click();
+  await logout.getLogoutBtn.click();
+  await expect(page).toHaveURL(/.*logout/);
+  await expect(page).toHaveTitle(/You are now logged out/);
 });
